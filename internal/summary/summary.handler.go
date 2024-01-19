@@ -3,7 +3,6 @@ package summary
 import (
 	"net/http"
 
-	"github.com/LiddleChild/covid-stat/internal/covid_case"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,12 +21,11 @@ func NewHandler(service Service) Handler {
 }
 
 func (h *handlerImpl) GetSummary(c *gin.Context) {
-	var cases []covid_case.CovidCase
-
-	err := h.service.GetSummary(&cases)
+	var summary Summary
+	err := h.service.GetSummary(&summary)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 	}
 
-	c.JSON(http.StatusOK, cases)
+	c.JSON(http.StatusOK, summary)
 }
