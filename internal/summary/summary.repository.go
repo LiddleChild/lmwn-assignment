@@ -2,7 +2,6 @@ package summary
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 
 	"github.com/LiddleChild/covid-stat/internal/covid_case"
@@ -25,13 +24,10 @@ func (r *repositoryImpl) GetCovidCases(result *[]covid_case.CovidCase) error {
 	}
 
 	defer res.Body.Close()
-	content, err := io.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
 
 	var casesReponse covid_case.CovidCasesResponse
-	err = json.Unmarshal(content, &casesReponse)
+
+	err = json.NewDecoder(res.Body).Decode(&casesReponse)
 	if err != nil {
 		return err
 	}
