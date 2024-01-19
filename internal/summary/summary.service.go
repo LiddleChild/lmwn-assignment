@@ -1,6 +1,8 @@
 package summary
 
 import (
+	"log"
+
 	"github.com/LiddleChild/covid-stat/internal/covid_case"
 )
 
@@ -22,6 +24,7 @@ func (s *serviceImpl) GetSummary(summary *Summary) error {
 	var covidCases []covid_case.CovidCase
 	err := s.repo.GetCovidCases(&covidCases)
 	if err != nil {
+		log.Printf("Error occured while retrieving data from server. %v", err.Error())
 		return err
 	}
 
