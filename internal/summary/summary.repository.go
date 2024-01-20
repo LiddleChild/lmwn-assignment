@@ -22,13 +22,13 @@ func NewRepository() Repository {
 func (r *repositoryImpl) GetCovidCases(result *[]covid_case.CovidCase, url string) *apperror.AppError {
 	res, err := http.Get(url)
 	if err != nil {
-		fmt.Printf("Error occured while requesting data from covid stat server. %v", err.Error())
+		fmt.Printf("Error occured while requesting data from covid stat server. %v\n", err.Error())
 		return apperror.ServiceUnavailable
 	}
 
 	statusOK := res.StatusCode >= 200 && res.StatusCode < 300
 	if !statusOK {
-		fmt.Printf("Covid stat server responded with code %v", res.StatusCode)
+		fmt.Printf("Covid stat server responded with code %v\n", res.StatusCode)
 		return apperror.ResponseError
 	}
 
@@ -38,7 +38,7 @@ func (r *repositoryImpl) GetCovidCases(result *[]covid_case.CovidCase, url strin
 
 	err = json.NewDecoder(res.Body).Decode(&casesReponse)
 	if err != nil {
-		fmt.Printf("Error occured while decoding response body. %v", err.Error())
+		fmt.Printf("Error occured while decoding response body. %v\n", err.Error())
 		return apperror.DecodeError
 	}
 
