@@ -24,14 +24,24 @@ func TestGetSummary(t *testing.T) {
 		expectedCode int
 	}{
 		{
-			name:         "OK",
+			name:         "ok",
 			err:          nil,
 			expectedCode: http.StatusOK,
 		},
 		{
-			name:         "Internal Server Error",
-			err:          apperror.ServiceUnavailable,
+			name:         "decode error",
+			err:          apperror.DecodeError,
 			expectedCode: http.StatusInternalServerError,
+		},
+		{
+			name:         "service unavailable",
+			err:          apperror.ServiceUnavailable,
+			expectedCode: http.StatusServiceUnavailable,
+		},
+		{
+			name:         "response error",
+			err:          apperror.ResponseError,
+			expectedCode: http.StatusServiceUnavailable,
 		},
 	}
 
@@ -45,6 +55,7 @@ func TestGetSummary(t *testing.T) {
 
 			handler := NewHandler(&service)
 
+			gin.SetMode(gin.DebugMode)
 			router := gin.New()
 			router.GET("/covid/summary", handler.GetSummary)
 
@@ -53,7 +64,7 @@ func TestGetSummary(t *testing.T) {
 			router.ServeHTTP(rec, req)
 
 			if rec.Code != tc.expectedCode {
-				t.Errorf("Response code is wrong.\nError: %v\nResult: %v\nExpected: %v", tc.err, rec.Code, tc.expectedCode)
+				t.Errorf("Response code is wrong.\nError: %v\nExpected code: %v\nActual code: %v", tc.err, rec.Code, tc.expectedCode)
 			}
 		})
 	}

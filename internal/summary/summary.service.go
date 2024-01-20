@@ -29,8 +29,8 @@ func (s *serviceImpl) GetSummary(summary *Summary) *apperror.AppError {
 		return err
 	}
 
-	(*summary).Province = map[string]int{}
-	(*summary).AgeGroup = AgeGroup{}
+	summary.Province = map[string]int{}
+	summary.AgeGroup = AgeGroup{}
 
 	for _, c := range covidCases {
 		addProvince(summary, c.Province)

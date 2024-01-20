@@ -12,16 +12,16 @@ import (
 
 func TestGetCovidCases(t *testing.T) {
 	testCases := []struct {
-		name          string
-		invalidURL    bool
-		code          int
-		body          string
-		expectedError *apperror.AppError
+		name        string
+		validUrl    bool
+		code        int
+		body        string
+		expectedErr *apperror.AppError
 	}{
 		{
-			name:       "response OK",
-			invalidURL: false,
-			code:       http.StatusOK,
+			name:     "response ok",
+			validUrl: false,
+			code:     http.StatusOK,
 			body: `{
 				"Data": [
 					{
@@ -34,25 +34,25 @@ func TestGetCovidCases(t *testing.T) {
 					}
 				]
 			}`,
-			expectedError: nil,
+			expectedErr: nil,
 		},
 		{
-			name:          "response OK, parse fail",
-			invalidURL:    false,
-			code:          http.StatusOK,
-			body:          "{",
-			expectedError: apperror.DecodeError,
+			name:        "response ok decode fail",
+			validUrl:    false,
+			code:        http.StatusOK,
+			body:        "{",
+			expectedErr: apperror.DecodeError,
 		},
 		{
-			name:          "response not found",
-			invalidURL:    false,
-			code:          http.StatusNotFound,
-			expectedError: apperror.ResponseError,
+			name:        "response not found",
+			validUrl:    false,
+			code:        http.StatusNotFound,
+			expectedErr: apperror.ResponseError,
 		},
 		{
-			name:          "service unavailable",
-			invalidURL:    true,
-			expectedError: apperror.ServiceUnavailable,
+			name:        "service unavailable",
+			validUrl:    true,
+			expectedErr: apperror.ServiceUnavailable,
 		},
 	}
 
@@ -72,14 +72,14 @@ func TestGetCovidCases(t *testing.T) {
 			cases := []covid_case.CovidCase{}
 
 			url := testServer.URL
-			if tc.invalidURL {
+			if tc.validUrl {
 				url = ""
 			}
 
 			err := repo.GetCovidCases(&cases, url)
 
-			if err != tc.expectedError {
-				t.Errorf("\nResponse code: %v\nResponse body: '%v'\nExpected error: %v\nActual error: %v", tc.code, tc.body, tc.expectedError, err)
+			if err != tc.expectedErr {
+				t.Errorf("\nResponse code: %v\nResponse body: '%v'\nExpected error: %v\nActual error: %v\n", tc.code, tc.body, tc.expectedErr, err)
 			}
 		})
 	}

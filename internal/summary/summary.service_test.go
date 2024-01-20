@@ -20,7 +20,6 @@ func (r *mockRepository) GetCovidCases(result *[]covid_case.CovidCase, url strin
 }
 
 func TestErrorGetSummary(t *testing.T) {
-
 	t.Run("error", func(t *testing.T) {
 		repo := &mockRepository{
 			getCovidCasesFunc: func(result *[]covid_case.CovidCase) *apperror.AppError {
@@ -33,7 +32,7 @@ func TestErrorGetSummary(t *testing.T) {
 		result := Summary{}
 		err := service.GetSummary(&result)
 		if err == nil {
-			t.Errorf("This should throw an error.")
+			t.Errorf("This should return an error.\nActual error: %v", err)
 		}
 	})
 }
@@ -45,7 +44,7 @@ func TestSuccessGetSummary(t *testing.T) {
 		expected Summary
 	}{
 		{
-			name:     "success, both null",
+			name:     "success null province null age group",
 			testcase: `[{ "Age": null, "Province": null }]`,
 			expected: Summary{
 				Province: map[string]int{
@@ -60,7 +59,7 @@ func TestSuccessGetSummary(t *testing.T) {
 			},
 		},
 		{
-			name:     "success, null province",
+			name:     "success null province",
 			testcase: `[{ "Age": 1, "Province": null }]`,
 			expected: Summary{
 				Province: map[string]int{
@@ -75,7 +74,7 @@ func TestSuccessGetSummary(t *testing.T) {
 			},
 		},
 		{
-			name:     "success, null age",
+			name:     "success null age",
 			testcase: `[{ "Age": null, "Province": "A" }]`,
 			expected: Summary{
 				Province: map[string]int{
@@ -90,7 +89,7 @@ func TestSuccessGetSummary(t *testing.T) {
 			},
 		},
 		{
-			name: "success, 0-30 group",
+			name: "success 0-30 group",
 			testcase: `[
 				{ "Age":  0, "Province": "A" },
 				{ "Age": 30, "Province": "B" }
@@ -109,7 +108,7 @@ func TestSuccessGetSummary(t *testing.T) {
 			},
 		},
 		{
-			name: "success, 31-60 group",
+			name: "success 31-60 group",
 			testcase: `[
 				{ "Age": 31, "Province": "A" },
 				{ "Age": 60, "Province": "B" }
@@ -128,7 +127,7 @@ func TestSuccessGetSummary(t *testing.T) {
 			},
 		},
 		{
-			name: "success, 61+ group",
+			name: "success 61+ group",
 			testcase: `[
 				{ "Age": 61, "Province": "A" }
 			]`,
@@ -164,15 +163,26 @@ func TestSuccessGetSummary(t *testing.T) {
 			result := Summary{}
 			err := service.GetSummary(&result)
 			if err != nil {
-				t.Errorf("This should not throw any error.\nTestcase: %v\nError: %v", tc.testcase, err)
+				t.Errorf("This should not return any error.\nTestcase: %v\nActual error: %v\n",
+					tc.testcase,
+					err,
+				)
 			}
 
 			if tc.expected.AgeGroup != result.AgeGroup {
-				t.Errorf("AgeGroup wrong.\nTestcase: %v\nResult: %v\nExpected: %v", tc.testcase, result, tc.expected)
+				t.Errorf("Wrong AgeGroup result.\nTestcase: %v\nResult: %v\nExpected: %v\n",
+					tc.testcase,
+					result,
+					tc.expected,
+				)
 			}
 
 			if !reflect.DeepEqual(tc.expected.Province, result.Province) {
-				t.Errorf("Province wrong.\nTestcase: %v\nResult: %v\nExpected: %v", tc.testcase, result, tc.expected)
+				t.Errorf("Wrong Province result.\nTestcase: %v\nResult: %v\nExpected: %v\n",
+					tc.testcase,
+					result,
+					tc.expected,
+				)
 			}
 		})
 	}
