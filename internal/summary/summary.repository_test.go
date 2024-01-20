@@ -56,28 +56,31 @@ func TestGetCovidCases(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(tc.code)
-			_, err := w.Write([]byte(tc.body))
-			if err != nil {
-				fmt.Println(err)
+		t.Run(tc.name, func(t *testing.T) {
+			testServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(tc.code)
+				_, err := w.Write([]byte(tc.body))
+				if err != nil {
+					fmt.Println(err)
+				}
+			}))
+			defer testServer.Close()
+
+			repo := NewRepository()
+
+			cases := []covid_case.CovidCase{}
+
+			url := testServer.URL
+			if tc.invalidURL {
+				url = ""
 			}
-		}))
-		defer testServer.Close()
 
-		repo := NewRepository()
+			err := repo.GetCovidCases(&cases, url)
 
-		cases := []covid_case.CovidCase{}
+			if err != nil != tc.expectedError {
+				t.Errorf("\nResponse code: %v\nResponse body: '%v'\nExpected error: %v\nActual error: %v", tc.code, tc.body, tc.expectedError, err)
+			}
 
-		url := testServer.URL
-		if tc.invalidURL {
-			url = ""
-		}
-
-		err := repo.GetCovidCases(&cases, url)
-
-		if err != nil != tc.expectedError {
-			t.Errorf("\nResponse code: %v\nResponse body: '%v'\nExpected error: %v\nActual error: %v", tc.code, tc.body, tc.expectedError, err)
-		}
+		})
 	}
 }

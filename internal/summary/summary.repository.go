@@ -25,8 +25,6 @@ func (r *repositoryImpl) GetCovidCases(result *[]covid_case.CovidCase, url strin
 		return err
 	}
 
-	fmt.Println(res.StatusCode)
-
 	statusOK := res.StatusCode >= 200 && res.StatusCode < 300
 	if !statusOK {
 		return errors.New(fmt.Sprintf("Server responded with status %v", res.StatusCode))
