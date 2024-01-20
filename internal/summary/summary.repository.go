@@ -2,6 +2,8 @@ package summary
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/LiddleChild/covid-stat/internal/covid_case"
@@ -21,6 +23,13 @@ func (r *repositoryImpl) GetCovidCases(result *[]covid_case.CovidCase, url strin
 	res, err := http.Get(url)
 	if err != nil {
 		return err
+	}
+
+	fmt.Println(res.StatusCode)
+
+	statusOK := res.StatusCode >= 200 && res.StatusCode < 300
+	if !statusOK {
+		return errors.New(fmt.Sprintf("Server responded with status %v", res.StatusCode))
 	}
 
 	defer res.Body.Close()
