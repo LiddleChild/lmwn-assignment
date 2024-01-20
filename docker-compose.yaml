@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  backend:
+    container_name: covid-summary
+    build: .
+    ports:
+      - 8000:8000
+    environment:
+      - APP_ENV=production
+      - APP_PORT=8000
+      - COVID_STAT_SERVER=https://static.wongnai.com/devinterview/covid-cases.json
