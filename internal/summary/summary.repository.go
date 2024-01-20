@@ -8,7 +8,7 @@ import (
 )
 
 type Repository interface {
-	GetCovidCases(*[]covid_case.CovidCase) error
+	GetCovidCases(*[]covid_case.CovidCase, string) error
 }
 
 type repositoryImpl struct{}
@@ -17,8 +17,8 @@ func NewRepository() Repository {
 	return &repositoryImpl{}
 }
 
-func (r *repositoryImpl) GetCovidCases(result *[]covid_case.CovidCase) error {
-	res, err := http.Get("https://static.wongnai.com/devinterview/covid-cases.json")
+func (r *repositoryImpl) GetCovidCases(result *[]covid_case.CovidCase, url string) error {
+	res, err := http.Get(url)
 	if err != nil {
 		return err
 	}

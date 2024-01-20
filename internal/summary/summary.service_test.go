@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/LiddleChild/covid-stat/config"
 	"github.com/LiddleChild/covid-stat/internal/covid_case"
 )
 
@@ -14,7 +15,7 @@ type mockRepository struct {
 	getCovidCasesFunc func(*[]covid_case.CovidCase) error
 }
 
-func (r *mockRepository) GetCovidCases(result *[]covid_case.CovidCase) error {
+func (r *mockRepository) GetCovidCases(result *[]covid_case.CovidCase, url string) error {
 	return r.getCovidCasesFunc(result)
 }
 
@@ -27,7 +28,7 @@ func TestErrorGetSummary(t *testing.T) {
 			},
 		}
 
-		service := NewService(repo)
+		service := NewService(repo, &config.Config{})
 
 		result := Summary{}
 		err := service.GetSummary(&result)
@@ -158,7 +159,7 @@ func TestSuccessGetSummary(t *testing.T) {
 				},
 			}
 
-			service := NewService(repo)
+			service := NewService(repo, &config.Config{})
 
 			result := Summary{}
 			err := service.GetSummary(&result)

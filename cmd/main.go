@@ -21,7 +21,7 @@ func main() {
 	r := gin.Default()
 
 	summaryRepo := summary.NewRepository()
-	summaryService := summary.NewService(summaryRepo)
+	summaryService := summary.NewService(summaryRepo, config)
 	summaryHandler := summary.NewHandler(summaryService)
 
 	r.GET("/covid/summary", summaryHandler.GetSummary)
