@@ -26,6 +26,7 @@ func (h *handlerImpl) GetSummary(c *gin.Context) {
 	if err != nil {
 		c.JSON(err.Code, gin.H{
 			"name": err.Name,
+			"path": c.Request.URL.Path,
 		})
 		return
 	}
