@@ -2,20 +2,20 @@ package summary
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"reflect"
 	"testing"
 
+	"github.com/LiddleChild/covid-stat/apperror"
 	"github.com/LiddleChild/covid-stat/config"
 	"github.com/LiddleChild/covid-stat/internal/covid_case"
 )
 
 type mockRepository struct {
-	getCovidCasesFunc func(*[]covid_case.CovidCase) error
+	getCovidCasesFunc func(*[]covid_case.CovidCase) *apperror.AppError
 }
 
-func (r *mockRepository) GetCovidCases(result *[]covid_case.CovidCase, url string) error {
+func (r *mockRepository) GetCovidCases(result *[]covid_case.CovidCase, url string) *apperror.AppError {
 	return r.getCovidCasesFunc(result)
 }
 
@@ -23,8 +23,8 @@ func TestErrorGetSummary(t *testing.T) {
 
 	t.Run("error", func(t *testing.T) {
 		repo := &mockRepository{
-			getCovidCasesFunc: func(result *[]covid_case.CovidCase) error {
-				return errors.New("Error occured while retrieving data from server.")
+			getCovidCasesFunc: func(result *[]covid_case.CovidCase) *apperror.AppError {
+				return apperror.ServiceUnavailable
 			},
 		}
 
@@ -149,7 +149,7 @@ func TestSuccessGetSummary(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			repo := &mockRepository{
-				getCovidCasesFunc: func(result *[]covid_case.CovidCase) error {
+				getCovidCasesFunc: func(result *[]covid_case.CovidCase) *apperror.AppError {
 					err := json.Unmarshal([]byte(tc.testcase), result)
 					if err != nil {
 						fmt.Println(err.Error())
@@ -164,7 +164,7 @@ func TestSuccessGetSummary(t *testing.T) {
 			result := Summary{}
 			err := service.GetSummary(&result)
 			if err != nil {
-				t.Errorf("This should not throw any error.\nTestcase: %v\nError: %v", tc.testcase, err.Error())
+				t.Errorf("This should not throw any error.\nTestcase: %v\nError: %v", tc.testcase, err)
 			}
 
 			if tc.expected.AgeGroup != result.AgeGroup {

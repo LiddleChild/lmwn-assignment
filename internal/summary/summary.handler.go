@@ -24,8 +24,8 @@ func (h *handlerImpl) GetSummary(c *gin.Context) {
 	var summary Summary
 	err := h.service.GetSummary(&summary)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"message": "Error while retrieving data from server.",
+		c.JSON(err.Code, gin.H{
+			"name": err.Name,
 		})
 		return
 	}

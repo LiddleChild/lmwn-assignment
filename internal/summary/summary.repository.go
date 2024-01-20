@@ -2,15 +2,14 @@ package summary
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
 	"net/http"
 
+	"github.com/LiddleChild/covid-stat/apperror"
 	"github.com/LiddleChild/covid-stat/internal/covid_case"
 )
 
 type Repository interface {
-	GetCovidCases(*[]covid_case.CovidCase, string) error
+	GetCovidCases(*[]covid_case.CovidCase, string) *apperror.AppError
 }
 
 type repositoryImpl struct{}
@@ -19,15 +18,15 @@ func NewRepository() Repository {
 	return &repositoryImpl{}
 }
 
-func (r *repositoryImpl) GetCovidCases(result *[]covid_case.CovidCase, url string) error {
+func (r *repositoryImpl) GetCovidCases(result *[]covid_case.CovidCase, url string) *apperror.AppError {
 	res, err := http.Get(url)
 	if err != nil {
-		return err
+		return apperror.ServiceUnavailable
 	}
 
 	statusOK := res.StatusCode >= 200 && res.StatusCode < 300
 	if !statusOK {
-		return errors.New(fmt.Sprintf("Server responded with status %v", res.StatusCode))
+		return apperror.ResponseError
 	}
 
 	defer res.Body.Close()
@@ -36,7 +35,7 @@ func (r *repositoryImpl) GetCovidCases(result *[]covid_case.CovidCase, url strin
 
 	err = json.NewDecoder(res.Body).Decode(&casesReponse)
 	if err != nil {
-		return err
+		return apperror.DecodeError
 	}
 
 	*result = casesReponse.Data

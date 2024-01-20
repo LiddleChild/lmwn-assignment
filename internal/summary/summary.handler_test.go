@@ -1,26 +1,26 @@
 package summary
 
 import (
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/LiddleChild/covid-stat/apperror"
 	"github.com/gin-gonic/gin"
 )
 
 type mockService struct {
-	getSummary func(*Summary) error
+	getSummary func(*Summary) *apperror.AppError
 }
 
-func (h *mockService) GetSummary(summary *Summary) error {
+func (h *mockService) GetSummary(summary *Summary) *apperror.AppError {
 	return h.getSummary(summary)
 }
 
 func TestGetSummary(t *testing.T) {
 	testCases := []struct {
 		name         string
-		err          error
+		err          *apperror.AppError
 		expectedCode int
 	}{
 		{
@@ -30,7 +30,7 @@ func TestGetSummary(t *testing.T) {
 		},
 		{
 			name:         "Internal Server Error",
-			err:          errors.New("Error occured while retrieving data from server."),
+			err:          apperror.ServiceUnavailable,
 			expectedCode: http.StatusInternalServerError,
 		},
 	}
@@ -38,7 +38,7 @@ func TestGetSummary(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			service := mockService{
-				getSummary: func(s *Summary) error {
+				getSummary: func(s *Summary) *apperror.AppError {
 					return tc.err
 				},
 			}

@@ -1,14 +1,13 @@
 package summary
 
 import (
-	"log"
-
+	"github.com/LiddleChild/covid-stat/apperror"
 	"github.com/LiddleChild/covid-stat/config"
 	"github.com/LiddleChild/covid-stat/internal/covid_case"
 )
 
 type Service interface {
-	GetSummary(*Summary) error
+	GetSummary(*Summary) *apperror.AppError
 }
 
 type serviceImpl struct {
@@ -23,11 +22,10 @@ func NewService(repo Repository, config *config.Config) Service {
 	}
 }
 
-func (s *serviceImpl) GetSummary(summary *Summary) error {
+func (s *serviceImpl) GetSummary(summary *Summary) *apperror.AppError {
 	var covidCases []covid_case.CovidCase
 	err := s.repo.GetCovidCases(&covidCases, s.config.CovidHost)
 	if err != nil {
-		log.Printf("Error occured while retrieving data from server. %v", err.Error())
 		return err
 	}
 
