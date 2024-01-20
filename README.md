@@ -26,3 +26,4 @@ This project utilizes Clean Code Architecture containing the following layers.
   - `run` run go app
   - `test` run go test with exported coverage profile
   - `cover` open coverage profile in html
+- **`Dockerfile` `.dockerignore` `docker-compose.yaml`** containerized app
