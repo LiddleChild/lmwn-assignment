@@ -55,7 +55,7 @@ func TestGetSummary(t *testing.T) {
 
 			handler := NewHandler(&service)
 
-			gin.SetMode(gin.DebugMode)
+			gin.SetMode(gin.TestMode)
 			router := gin.New()
 			router.GET("/covid/summary", handler.GetSummary)
 
