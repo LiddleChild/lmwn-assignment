@@ -89,6 +89,21 @@ func TestSuccessGetSummary(t *testing.T) {
 			},
 		},
 		{
+			name:     "success negative age",
+			testcase: `[{ "Age": -99, "Province": "A" }]`,
+			expected: Summary{
+				Province: map[string]int{
+					"A": 1,
+				},
+				AgeGroup: AgeGroup{
+					Young:     0,
+					MiddleAge: 0,
+					Elderly:   0,
+					Null:      1,
+				},
+			},
+		},
+		{
 			name: "success 0-30 group",
 			testcase: `[
 				{ "Age":  0, "Province": "A" },

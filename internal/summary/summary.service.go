@@ -50,7 +50,7 @@ func addProvince(summary *Summary, provinceName *string) {
 }
 
 func addAgeGroup(summary *Summary, age *int) {
-	if age == nil {
+	if age == nil || *age < 0 {
 		summary.AgeGroup.Null += 1
 	} else if *age <= 30 {
 		summary.AgeGroup.Young += 1
